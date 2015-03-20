@@ -1,5 +1,36 @@
 #!/bin/bash
 
 ulimit -n 1024
+
 chown -R rabbitmq:rabbitmq /data
-exec rabbitmq-server $@
+chown -R rabbitmq:rabbitmq /data/log
+chown -R rabbitmq:rabbitmq /data/mnesia
+
+HOSTNAME=$(hostname)
+PID_FILE="/data/mnesia/rabbit\@$HOSTNAME.pid"
+
+function start()
+{
+	su rabbitmq -s /bin/sh -c "/usr/lib/rabbitmq/bin/rabbitmq-server" &
+	su rabbitmq -s /bin/sh -c "/usr/sbin/rabbitmqctl wait $PID_FILE"
+}
+
+function stop()
+{
+	su rabbitmq -s /bin/sh -c "/usr/sbin/rabbitmqctl stop $PID_FILE"
+	exit
+}
+
+function restart()
+{
+	su rabbitmq -s /bin/sh -c "/usr/sbin/rabbitmqctl restart"
+}
+
+trap stop EXIT SIGINT SIGTERM
+trap restart SIGHUP
+
+start
+
+while true; do
+  sleep 1000 & wait
+done

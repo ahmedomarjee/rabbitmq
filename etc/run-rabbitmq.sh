@@ -1,0 +1,2 @@
+#docker run --name rabbitmq -d -p 5672:5672 -p 15672:15672 -v ~/.data/db/rabbit/log:/data/log -v ~/.data/db/rabbit/mnesia:/data/mnesia zailab/rabbitmq:latest
+docker run --name rabbitmq -d -p 5672:5672 -p 15672:15672 --volumes-from rabbitmq_datastore zailab/rabbitmq:latest

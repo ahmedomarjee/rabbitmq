@@ -1,0 +1,1 @@
+docker run --name rabbitmq_datastore zailab/datastore:latest
